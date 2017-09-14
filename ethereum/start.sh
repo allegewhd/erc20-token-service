@@ -24,7 +24,7 @@ while [ $# -ge 1 ]; do
             ;;
         *)
             echo "unknown option ${key}"
-            echo "Usage: start_dev.sh [-r|--reset] [-m|--mining] "
+            echo "Usage: ./start.sh [-r|--reset] [-m|--mining] "
             echo "[-r|--reset] clear blockchain data and init genesis before start console"
             echo "[-m|--mining] start geth with mining enabled"
             exit 1
@@ -37,10 +37,13 @@ done
 # set geth options
 SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATA_ROOT=${SCRIPT_PATH}/data
+DAG_PATH=${DATA_ROOT}/ethdash
 DATA_PATH=${DATA_ROOT}/dev
-GENESIS_FILE=${SCRIPT_PATH}/config/genesis.json
-KEYSTORE_PATH=${SCRIPT_PATH}/keystore
-PASSWORD_FILE=${SCRIPT_PATH}/config/.unlockpwd
+GENESIS_FILE=${SCRIPT_PATH}/genesis.json
+KEYSTORE_PATH=${DATA_PATH}/keystore
+PASSWORD_FILE=${SCRIPT_PATH}/account_unlock_pass
+
+DAG_OPT="--ethash.dagdir ${DAG_PATH}"
 
 NODE_NAME="DEV_NODE"
 RPC_PORT=8011
@@ -56,23 +59,41 @@ MINING_ACCOUNT="0xd7a1f2dec979dbb4e09f99db22fe06b7f813e600"
 UNLOCK_OPT="--unlock ${PRIMARY_ACCOUNT} --password ${PASSWORD_FILE}"
 
 if [ "${MINING_ENABLE}" == true ]; then
-    MINING_OPT="--mine --minerthreads 1 --autodag --gasprice 0 --etherbase ${MINING_ACCOUNT} --extradata ${NODE_NAME}"
+    MINING_OPT="--mine --minerthreads 1 --gasprice 0 --etherbase ${MINING_ACCOUNT} --extradata ${NODE_NAME}"
 else
     MINING_OPT="--gasprice 0 --etherbase ${MINING_ACCOUNT} --extradata ${NODE_NAME}"
 fi
-
 
 if [ ! -d ${DATA_PATH} ]; then
     echo mkdir -p ${DATA_PATH}
     mkdir -p ${DATA_PATH}
 fi
 
+if [ ! -d ${KEYSTORE_PATH} ]; then
+    echo mkdir -p ${KEYSTORE_PATH}
+    mkdir -p ${KEYSTORE_PATH}
+
+    for f in `ls ${SCRIPT_PATH}/UTC-*`; do 
+        echo "copy $f to ${KEYSTORE_PATH} ..." 
+        cp -f $f ${KEYSTORE_PATH}/
+    done
+fi
+
+if [ ! -d ${DAG_PATH} ]; then
+    echo mkdir -p ${DAG_PATH}
+    mkdir -p ${DAG_PATH}
+fi
+
 if [ ! -d ${DATA_PATH}/geth ] || [ ${RESET_DATA} = true ]; then
     if [ -d ${DATA_PATH}/geth ]; then
         for f in `ls $DATA_PATH`
         do
-            echo "delete $DATA_PATH/$f ..."
-            rm -rf $DATA_PATH/$f
+            if [ "$f" = "keystore"]; then
+                echo "skip keystore folder ..."
+            else
+                echo "delete $DATA_PATH/$f ..."
+                rm -rf $DATA_PATH/$f
+            fi
         done
     fi
 
@@ -80,7 +101,6 @@ if [ ! -d ${DATA_PATH}/geth ] || [ ${RESET_DATA} = true ]; then
     ${GETH_CMD} --datadir "${DATA_PATH}" --keystore "${KEYSTORE_PATH}" init "${GENESIS_FILE}"
 fi
 
-echo ${GETH_CMD} --datadir "${DATA_PATH}" --keystore "${KEYSTORE_PATH}" --identity "${NODE_NAME}" --rpc --rpcport ${RPC_PORT} --rpccorsdomain "*" --port ${PORT} --nodiscover --ipcapi "${IPC_API}" --rpcapi "${RPC_API}" --networkid ${NETWORK_ID} ${UNLOCK_OPT} ${MINING_OPT} --verbosity ${LOG_LEVEL} --maxpeers ${MAX_PEERS} --nat "any" console
+echo ${GETH_CMD} --datadir "${DATA_PATH}" --keystore "${KEYSTORE_PATH}" ${DAG_OPT} --identity "${NODE_NAME}" --rpc --rpcport ${RPC_PORT} --rpccorsdomain "*" --port ${PORT} --nodiscover --rpcapi "${RPC_API}" --networkid ${NETWORK_ID} ${UNLOCK_OPT} ${MINING_OPT} --verbosity ${LOG_LEVEL} --maxpeers ${MAX_PEERS} --nat "any" console
 
-${GETH_CMD} --datadir "${DATA_PATH}" --keystore "${KEYSTORE_PATH}" --identity "${NODE_NAME}" --rpc --rpcport ${RPC_PORT} --rpccorsdomain "*" --port ${PORT} --nodiscover --ipcapi "${IPC_API}" --rpcapi "${RPC_API}" --networkid ${NETWORK_ID} ${UNLOCK_OPT} ${MINING_OPT} --verbosity ${LOG_LEVEL} --maxpeers ${MAX_PEERS} --nat "any" console
-
+${GETH_CMD} --datadir "${DATA_PATH}" --keystore "${KEYSTORE_PATH}" ${DAG_OPT} --identity "${NODE_NAME}" --rpc --rpcport ${RPC_PORT} --rpccorsdomain "*" --port ${PORT} --nodiscover --rpcapi "${RPC_API}" --networkid ${NETWORK_ID} ${UNLOCK_OPT} ${MINING_OPT} --verbosity ${LOG_LEVEL} --maxpeers ${MAX_PEERS} --nat "any" console
