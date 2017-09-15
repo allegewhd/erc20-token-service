@@ -3,6 +3,8 @@
 const Koa = require('koa');
 const app = new Koa();
 
+const common =  require('./app/common');
+
 app.use(async (ctx, next) => {
   const start = Date.now();
   await next();
