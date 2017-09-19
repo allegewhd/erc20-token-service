@@ -1,6 +1,6 @@
 "use strict";
 
-const config         = require('./config.js');
+const config         = require('./config');
 const Web3           = require('web3');
 const util           = require('util');
 
