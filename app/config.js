@@ -11,6 +11,7 @@ var config = {
   port   : process.env.PORT || 8000,
   ethereum : {
     contract: {
+      deployerAddress: '0x491d73f257016fa8546e398be0d3bb2a72288c09',
       sourcePath: path.resolve(__dirname, '../contract')
     },
     url: 'http://localhost:8011'

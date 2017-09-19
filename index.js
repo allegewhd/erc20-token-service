@@ -44,7 +44,11 @@ router.get('deploy', '/deploy/:contractName', async (ctx) => {
     ctx.throw(400, 'contract ' + contractName + ' source file ' + sourceFile + ' not found!');
   }
 
-  ctx.body = 'deploy contract ' + contractName + ' with source file ' + sourceFile;
+  var deploy = require('./app/deploy');
+
+  var deployResult = await deploy(contractName, sourceFile)
+
+  ctx.body = deployResult;
 });
 
 router.get('balance', '/balance/:ethAddress', (ctx) => {
