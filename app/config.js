@@ -10,6 +10,9 @@ var config = {
   debug  : env !== 'production',
   port   : process.env.PORT || 8000,
   ethereum : {
+    contract: {
+      sourcePath: path.resolve(__dirname, '../contract')
+    },
     url: 'http://localhost:8011'
   }
 };

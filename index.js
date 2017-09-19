@@ -1,5 +1,8 @@
 'use strict';
 
+var path = require('path');
+var fs   = require('fs');
+
 const config = require('./app/config');
 const common = require('./app/common');
 
@@ -28,12 +31,20 @@ router.get('home', '/', function(ctx, next) {
   ctx.body = 'hello koa2';
 });
 
-router.get('deploy', '/deploy/:contractName', (ctx) => {
+router.get('deploy', '/deploy/:contractName', async (ctx) => {
   var contractName = ctx.params.contractName;
 
   console.log('deploy ' + contractName);
 
-  ctx.body = 'deploy contract ' + contractName;
+  var sourceFile = path.resolve(config.ethereum.contract.sourcePath, contractName + '.sol');
+
+  console.log('contract source file : ' + sourceFile);
+
+  if (!fs.existsSync(sourceFile)) {
+    ctx.throw(400, 'contract ' + contractName + ' source file ' + sourceFile + ' not found!');
+  }
+
+  ctx.body = 'deploy contract ' + contractName + ' with source file ' + sourceFile;
 });
 
 router.get('balance', '/balance/:ethAddress', (ctx) => {
@@ -93,4 +104,3 @@ app.use(router.routes()).use(router.allowedMethods());
 
 app.listen(config.port);
 console.info("server started on port " + config.port);
-
