@@ -12,7 +12,8 @@ var config = {
   ethereum : {
     contract: {
       deployerAddress: '0xc3e836ea59dd855469cd2059e531ddcdbceac78f',
-      sourcePath: path.resolve(__dirname, '../contract')
+      sourcePath: path.resolve(__dirname, '../contract'),
+      outputPath: path.resolve(__dirname, '../runtime/contract')
     },
     url: 'http://localhost:8011'
   }

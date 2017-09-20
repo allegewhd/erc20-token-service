@@ -23,6 +23,7 @@
   "author": "Haidong Wang",
   "license": "MIT",
   "dependencies": {
+    "fs-extra": "^4.0.2",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
     "koa-router": "^7.2.1",

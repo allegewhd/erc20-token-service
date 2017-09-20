@@ -1,15 +1,20 @@
 "use strict";
 
-var fs = require('fs');
+var fs   = require('fs');
 var path = require('path');
 
 const common = require('./common');
 const config = require('./config');
-const solc = require('solc');
+const solc   = require('solc');
 
 let web3 = common.initWeb3();
 
 async function deployContract(name) {
+  let jsonFileName = name + '.json';
+  var contractMetaData = {
+    contractName: name,
+    contractFile: path.resolve(config.ethereum.contract.sourcePath, name + '.sol')
+  };
 
   // load all sol files in source directory
   var sourceFiles = fs.readdirSync(config.ethereum.contract.sourcePath);
@@ -20,7 +25,7 @@ async function deployContract(name) {
     }
   }
 
-  common.dump(sourceContents);
+  // common.dump(sourceContents);
 
   var compiledContract = solc.compile({sources: sourceContents}, 1);
 
@@ -40,6 +45,7 @@ async function deployContract(name) {
 
   console.log('estimated gas: ', gasEstimate);
 
+  contractMetaData.contractAbi = contractAbi;
 
   // from web3.js 1.0.x, API changed
   var contractInstance = new web3.eth.Contract(JSON.parse(contractAbi));
@@ -55,7 +61,16 @@ async function deployContract(name) {
   }).on('transactionHash', (transactionHash) => {
     console.log("deploy transaction hash: ", transactionHash);
   }).on('receipt', (receipt) => {
-    console.log('deployed at ', receipt.contractAddress);
+    console.log('deployed at ', receipt);
+
+    contractMetaData.transactionHash   = receipt.transactionHash;
+    contractMetaData.contractAddress   = receipt.contractAddress;
+    contractMetaData.deployerAddress   = receipt.from;
+    contractMetaData.deployGasUsed     = receipt.gasUsed;
+    contractMetaData.deployBlockHash   = receipt.blockHash;
+    contractMetaData.deployBlockNumber = receipt.blockNumber;
+
+    common.writeJsonFile(jsonFileName, contractMetaData);
   });
 
   return 'contract ' + name + ' deployed.';

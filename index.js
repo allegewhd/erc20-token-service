@@ -6,6 +6,9 @@ var fs   = require('fs');
 const config = require('./app/config');
 const common = require('./app/common');
 
+var deploy = require('./app/deploy');
+var api = require('./app/api');
+
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
 const Router = require('koa-router');
@@ -44,14 +47,12 @@ router.get('deploy', '/deploy/:contractName', async (ctx) => {
     ctx.throw(400, 'contract ' + contractName + ' source file ' + sourceFile + ' not found!');
   }
 
-  var deploy = require('./app/deploy');
-
   var deployResult = await deploy(contractName);
 
   ctx.body = deployResult;
 });
 
-router.get('balance', '/balance/:ethAddress', (ctx) => {
+router.get('balance', '/balance/:ethAddress', async (ctx) => {
   var address = ctx.params.ethAddress || false;
 
   console.log('get ' + address + ' balance ');
@@ -60,11 +61,13 @@ router.get('balance', '/balance/:ethAddress', (ctx) => {
     ctx.throw(400, 'address parameter required!');
   }
 
-  ctx.body = 'get ' + address  + ' balance';
+  var balanceAmount = await api.balance(address);
+
+  ctx.body = 'address ' + address  + ' balance is ' + balanceAmount;
 });
 
 // /distribute?to=xxxx&amount=xxxx
-router.get('distribute', '/distribute', (ctx) => {
+router.get('distribute', '/distribute', async (ctx) => {
   var  toAddress = ctx.request.query.to || false;
   var  amount = parseInt(ctx.request.query.amount) || false;
 
@@ -78,11 +81,13 @@ router.get('distribute', '/distribute', (ctx) => {
     ctx.throw(400, '1 or above amount required!');
   }
 
+  var distributeResult = await api.distribute(toAddress, amount);
+
   ctx.body = 'transfer ' + amount + ' to ' + toAddress;
 });
 
 // /transfer?from=xxxxx&to=xxxx&amount=xxxx
-router.get('transfer', '/transfer', (ctx) => {
+router.get('transfer', '/transfer', async (ctx) => {
   var  fromAddress = ctx.request.query.from || false;
   var  toAddress = ctx.request.query.to || false;
   var  amount = parseInt(ctx.request.query.amount) || false;

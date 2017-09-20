@@ -1,10 +1,13 @@
 "use strict";
 
-const config         = require('./config');
-const Web3           = require('web3');
-const util           = require('util');
+const config = require('./config');
+const Web3   = require('web3');
+const util   = require('util');
+const fs     = require('fs');
+const path   = require('path');
+const fse    = require('fs-extra');
 
-var   moment         = require("moment");
+var   moment     = require("moment");
 
 // util functions
 const Reset      = "\x1b[0m";
@@ -93,9 +96,33 @@ function dump(v) {
   return console.log(util.inspect(v));
 }
 
+function readJsonFile(fileName) {
+  let filePath = path.resolve(config.ethereum.contract.outputPath, fileName);
+
+  if (!fs.existsSync(filePath)) {
+    return "";
+  }
+
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function writeJsonFile(fileName, dataObj) {
+  let dir = config.ethereum.contract.outputPath;
+
+  if (!fs.existsSync(dir)) {
+    fse.mkdirsSync(dir);
+  }
+
+  var filePath = path.resolve(dir, fileName);
+
+  fs.writeFileSync(filePath, JSON.stringify(dataObj, null, 2), 'utf8');
+}
+
 var common = {};
 
 common.initWeb3                   = initWeb3;
 common.dump                       = dump;
+common.writeJsonFile              = writeJsonFile;
+common.readJsonFile               = readJsonFile;
 
 module.exports = common;
