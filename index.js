@@ -46,7 +46,7 @@ router.get('deploy', '/deploy/:contractName', async (ctx) => {
 
   var deploy = require('./app/deploy');
 
-  var deployResult = await deploy(contractName, sourceFile)
+  var deployResult = await deploy(contractName);
 
   ctx.body = deployResult;
 });

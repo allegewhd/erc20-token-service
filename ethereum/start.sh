@@ -54,8 +54,8 @@ NETWORK_ID=951056
 # Logging verbosity: 0-6 (0=silent, 1=error, 2=warn, 3=info, 4=core, 5=debug, 6=debug detail)
 LOG_LEVEL=3
 MAX_PEERS=2
-PRIMARY_ACCOUNT="0x491d73f257016fa8546e398be0d3bb2a72288c09"
-MINING_ACCOUNT="0xd7a1f2dec979dbb4e09f99db22fe06b7f813e600"
+PRIMARY_ACCOUNT="0xc3e836ea59dd855469cd2059e531ddcdbceac78f"
+MINING_ACCOUNT="0xe169dc2cf67b86096ca50bf1371464542c73f5bc"
 UNLOCK_OPT="--unlock ${PRIMARY_ACCOUNT} --password ${PASSWORD_FILE}"
 
 if [ "${MINING_ENABLE}" == true ]; then
@@ -73,8 +73,8 @@ if [ ! -d ${KEYSTORE_PATH} ]; then
     echo mkdir -p ${KEYSTORE_PATH}
     mkdir -p ${KEYSTORE_PATH}
 
-    for f in `ls ${SCRIPT_PATH}/UTC-*`; do 
-        echo "copy $f to ${KEYSTORE_PATH} ..." 
+    for f in `ls ${SCRIPT_PATH}/UTC-*`; do
+        echo "copy $f to ${KEYSTORE_PATH} ..."
         cp -f $f ${KEYSTORE_PATH}/
     done
 fi

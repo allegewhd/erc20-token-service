@@ -6,6 +6,8 @@
   "private": true,
   "scripts": {
     "start": "node -v; npm -v; node ./index.js",
+    "geth_console": "geth version; ./ethereum/start.sh",
+    "geth_attach": "geth version; ./ethereum/attach.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
