@@ -111,7 +111,7 @@ v8.4.0
 
 ```
 
-config file is `app/config.sj`
+config file is `app/config.js`
 deploy contract source files are placed in `contract` folder.
 
 ```bash
