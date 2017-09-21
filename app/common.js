@@ -70,9 +70,9 @@ Object.keys(funcs).forEach(function(k) {
 
 console.info("start erc20 token service " + config.version);
 
-function initWeb3() {
-  var web3;
+var web3;
 
+function initWeb3() {
   console.log("initialize web3, connect to ethereum chain node");
 
   if (typeof web3 !== 'undefined') {

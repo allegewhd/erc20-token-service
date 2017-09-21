@@ -88,7 +88,7 @@ if [ ! -d ${DATA_PATH}/geth ] || [ ${RESET_DATA} = true ]; then
     if [ -d ${DATA_PATH}/geth ]; then
         for f in `ls $DATA_PATH`
         do
-            if [ "$f" = "keystore"]; then
+            if [ "$f" = "keystore" ]; then
                 echo "skip keystore folder ..."
             else
                 echo "delete $DATA_PATH/$f ..."
