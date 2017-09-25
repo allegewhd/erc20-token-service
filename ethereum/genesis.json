@@ -13,7 +13,7 @@
     }
   },
   "config": {
-    "chainId"        : 10,
+    "chainId"        : 951056,
     "homesteadBlock" : 0,
     "eip155Block"    : 0,
     "eip158Block"    : 0

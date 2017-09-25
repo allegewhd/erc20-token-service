@@ -50,6 +50,7 @@ RPC_PORT=8011
 PORT=30311
 IPC_API="admin,db,eth,debug,miner,net,shh,txpool,personal,web3"
 RPC_API="db,eth,net,personal,web3"
+# must same with config.chainId value of genesis.json
 NETWORK_ID=951056
 # Logging verbosity: 0-6 (0=silent, 1=error, 2=warn, 3=info, 4=core, 5=debug, 6=debug detail)
 LOG_LEVEL=3
@@ -58,10 +59,12 @@ PRIMARY_ACCOUNT="0xc3e836ea59dd855469cd2059e531ddcdbceac78f"
 MINING_ACCOUNT="0xe169dc2cf67b86096ca50bf1371464542c73f5bc"
 UNLOCK_OPT="--unlock ${PRIMARY_ACCOUNT} --password ${PASSWORD_FILE}"
 
+# simulate mainnet value
+DEFAULT_GAS_PRICE=20000000000
 if [ "${MINING_ENABLE}" == true ]; then
-    MINING_OPT="--mine --minerthreads 1 --gasprice 0 --etherbase ${MINING_ACCOUNT} --extradata ${NODE_NAME}"
+    MINING_OPT="--mine --minerthreads 1 --gasprice ${DEFAULT_GAS_PRICE} --etherbase ${MINING_ACCOUNT} --extradata ${NODE_NAME}"
 else
-    MINING_OPT="--gasprice 0 --etherbase ${MINING_ACCOUNT} --extradata ${NODE_NAME}"
+    MINING_OPT="--gasprice ${DEFAULT_GAS_PRICE} --etherbase ${MINING_ACCOUNT} --extradata ${NODE_NAME}"
 fi
 
 if [ ! -d ${DATA_PATH} ]; then
